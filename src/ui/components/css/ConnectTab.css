@@ -1,0 +1,24 @@
+.connect-tab-div {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    gap: 0.5%;
+    box-sizing: border-box;
+    padding: 1%;
+}
+.mode-select-div {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    box-sizing: border-box;
+    padding: 5%;
+    width: 100%;
+}
+.mode-select-div div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}

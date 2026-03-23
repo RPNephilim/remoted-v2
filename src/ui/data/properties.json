@@ -1,0 +1,13 @@
+{
+    "serverBaseUrl": "http://localhost:1111/remoted/v1",
+    "loginPath": "/login",
+    "newAccountPath": "/createaccount",
+    "signalingServerUrl": "wss://192.168.0.238:8443/remoted/v1/signaling",
+    "configuration": {
+        "iceServers": [
+            {
+                "urls": "stun:stun.l.google.com:19302"
+            }
+        ]
+    }
+}

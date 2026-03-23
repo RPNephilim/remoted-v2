@@ -1,0 +1,25 @@
+.dashboard-page-div {
+    display: flex;
+    height: 100%;
+    width: 100%;
+}
+.dashboard-page-main-div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+    width: 100%;
+}
+.dashboard-page-main-viewport-div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 70%;
+    width: 80%;
+    margin-top: 5%;
+    background-color: rgb(68, 68, 68);
+    border-radius: 25px;
+    overflow: hidden;
+}

@@ -1,0 +1,31 @@
+.sidebar-div {
+    width: 6%;
+    height: 100vh; /* Changed to 100vh to ensure it fills the screen */
+    background-color: rgb(110, 110, 110);
+    display: flex;
+    flex-direction: column; /* Top to bottom */
+    align-items: center;
+    justify-content: space-between; /* Pushes children to top and bottom */
+    padding: 2% 0; /* Add padding to both top and bottom */
+    box-sizing: border-box;
+}
+
+.sidebar-top-icons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+.sidebar-bottom-icons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+.sidebar-bottom-icons:hover {
+    background-color: rgb(160, 160, 160);
+}
+.sidebar-bottom-icons:hover .MuiSvgIcon-root {
+    color: #000000;
+}

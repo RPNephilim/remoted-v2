@@ -1,0 +1,10 @@
+.session-device-bar-div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: rgb(119, 119, 119);
+    color: black;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.5rem 1rem;
+}
