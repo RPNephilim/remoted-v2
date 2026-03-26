@@ -6,4 +6,6 @@ import { contextBridge, ipcRenderer } from 'electron';
 // the ipcRenderer without exposing the entire object
 contextBridge.exposeInMainWorld('electronAPI', {
   setConnectionMode: (mode: string) => ipcRenderer.invoke('set-connection-mode', mode),
+  getSources: (types: string[]) => ipcRenderer.invoke('get-sources', types),
+  setCastSourceId: (sourceId: string) => ipcRenderer.invoke('set-cast-source-id', sourceId)
 });

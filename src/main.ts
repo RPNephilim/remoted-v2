@@ -2,7 +2,8 @@ import { app, BrowserWindow, session, desktopCapturer, ipcMain } from 'electron'
 import path from 'node:path';
 import started from 'electron-squirrel-startup';
 
-let currentConnectionMode: string = 'browse'; // Default connection mode
+let currentConnectionMode: string = 'browse';
+let currentCastSource: any = null; // Default connection mode
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
@@ -27,6 +28,38 @@ const createWindow = () => {
     return { success: true };
   });
 
+  ipcMain.handle('get-sources', async (event, types: string[]) => {
+    console.log(`Getting sources of types: ${types.join(', ')}`);
+    const sources = await desktopCapturer.getSources({ types: types as any });
+    // Map sources to a simpler format to send back to renderer
+    return sources.map(source => ({
+      id: source.id,
+      name: source.name,
+      thumbnail: source.thumbnail.toDataURL() // Convert thumbnail to data URL for easier use in renderer
+    }));
+  });
+
+  ipcMain.handle('set-cast-source-id', (event, sourceId: string) => {
+    console.log(`Received request to set cast source ID: ${sourceId}`);
+    // Here you can store the selected source ID in a variable or use it as needed
+    // For example, you could save it to a global variable or pass it to the peer connection logic
+    desktopCapturer.getSources({ types: ['screen', 'window'] }).then((sources) => {
+      // Grant access to the first screen found.
+        sources.forEach(source => {
+          console.log(`Available source: ${source.name} with ID ${source.id}`);
+        });
+        const selectedSource = sources.find(source => source.id === sourceId);
+        if (selectedSource) {
+          console.log(`Selected source found: ${selectedSource.name}`);
+          currentCastSource = selectedSource;
+          // You can now use selectedSource to establish the peer connection or for other logic
+        } else {
+          console.warn(`Source with ID ${sourceId} not found among available sources.`);
+        }
+    })
+    return { success: true };
+  });
+
   session.defaultSession.setDisplayMediaRequestHandler((request, callback) => {
     console.log(`Display media requested, current mode: ${currentConnectionMode}`);
 
@@ -42,7 +75,14 @@ const createWindow = () => {
         // Let user choose, we need to return the sources for the picker
         // Actually, for useSystemPicker, we just need to call callback with empty/undefined
         // to let the system picker handle it
-        callback({});
+        if (currentCastSource) {
+          console.log(`selected cast source: ${currentCastSource.name}`);
+          callback({ video: currentCastSource, audio: 'loopback' });
+        } else {
+          console.log('No cast source selected yet, casting entire screen by default');
+          callback({ video: sources[0], audio: 'loopback' });
+        }
+        
       });
     }
     // Browse mode: getDisplayMedia won't be called at all
@@ -88,7 +128,7 @@ app.on('certificate-error', (event, webContents, url, error, certificate, callba
   const isLocal = url.includes('localhost') ||
     url.includes('127.0.0.1') ||
     url.includes('192.168.0.238') ||
-    url.includes('192.168.1.119') ||
+    url.includes('192.168.1.105') ||
     /^https?:\/\/(10\.|172\.(1[6-9]|2[0-9]|3[01])\.|192\.168\.)/.test(url);
 
   if (isLocal) {

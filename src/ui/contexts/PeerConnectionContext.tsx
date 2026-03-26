@@ -11,6 +11,7 @@ export interface ConnectionData {
     remoteStream: MediaStream | null;
     dataChannel: RTCDataChannel | null;
     connectionState?: string; // Optional for tracking connection status
+    castModeSourceId?: string; // Optional for storing selected source in cast mode
 }
 
 export interface PeerConnectionContextType {
@@ -32,12 +33,13 @@ const initialData: ConnectionData = {
     remoteStream: null,
     dataChannel: null,
     connectionState: '',
+    castModeSourceId: '0' // Default to first source for cast mode
 };
 
 const PeerConnectionProvider = ({ children }: { children: ReactNode }) => {
     // Single state object for the connection data
     const [connection, setConnection] = useState<ConnectionData>(initialData);
-    
+
     // The Ref used for synchronous access (prevents stale values in WebRTC callbacks)
     const connectionRef = useRef<ConnectionData>(connection);
 

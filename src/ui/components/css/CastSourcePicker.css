@@ -1,0 +1,55 @@
+/* Container padding */
+.cast-source-picker-div {
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.cast-source-picker-div h2 {
+    color: #ffffff;
+    margin-bottom: 1.5rem;
+}
+
+/* Flexbox Layout */
+.cast-source-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    justify-content: flex-start;
+    overflow-y: auto;
+}
+
+/* Individual Card Styling */
+.source-card {
+    flex: 0 1 200px;
+    /* Base width of 200px */
+    padding: 1rem;
+    background-color: #4d4d4d;
+    color: #ffffff;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+.source-card:hover {
+    background-color: #5d5d5d;
+    transform: translateY(-4px);
+    /* Slight lift effect */
+}
+
+.source-card p {
+    margin: 0 0 0.5rem 0;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* Prevents long names from breaking layout */
+}
+
+/* Image Styling */
+.source-thumbnail {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 4px;
+    display: block;
+}

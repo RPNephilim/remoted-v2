@@ -7,6 +7,8 @@ import FolderIcon from '@mui/icons-material/Folder';
 import AirplayIcon from '@mui/icons-material/Airplay';
 import CastConnectedIcon from '@mui/icons-material/CastConnected';
 import { establishPeerConnection } from "../peerconnection/PeerConnectionService";
+import { Cast } from "@mui/icons-material";
+import CastSourcePicker from "./CastSourcePicker";
 
 
 function ConnectTab(props: any) {
@@ -18,6 +20,7 @@ function ConnectTab(props: any) {
     const { getConnection, updateConnection } = peerConnectionContext;
     const connection = getConnection();
     const userId = connection.userId;
+    const [openCastSourcePicker, setOpenCastSourcePicker] = useState(false);
 
     const confirmDeviceSelection = (deviceName: string) => {
         if (deviceName) {
@@ -44,6 +47,14 @@ function ConnectTab(props: any) {
         console.log("Establishing peer connection with: ", selectedDevice, " in mode: ", mode);
         updateConnection({ connectionMode: mode });
         establishPeerConnection(peerConnectionContext);
+    }
+
+    const chooseCastSource = async () => {
+        console.log("Opening cast source picker...");
+        setOpenCastSourcePicker(true);
+        props.setViewportStatus('cast-source-picker');
+        // updateConnection({ connectionMode: 'cast' });
+        // establishPeerConnection(peerConnectionContext);
     }
 
     return (
@@ -75,8 +86,10 @@ function ConnectTab(props: any) {
             { props.viewportStatus === 'select-mode' && <div className="mode-select-div">
                 <div><FolderIcon sx={modeIconStyle} onClick={() => connectWithPeer('browse')}/> Browse</div>
                 <div><AirplayIcon sx={modeIconStyle} onClick={() => connectWithPeer('control')}/> Control</div>
-                <div><CastConnectedIcon sx={modeIconStyle} onClick={() => connectWithPeer('cast')}/> Cast</div>
+                <div><CastConnectedIcon sx={modeIconStyle} onClick={() => chooseCastSource()}/> Cast</div>
             </div>}
+            { props.viewportStatus === 'cast-source-picker' && <CastSourcePicker open={openCastSourcePicker} viewPortStatus={props.viewportStatus} setViewportStatus={props.setViewportStatus}  /> }
+            { props.viewportStatus === 'casting' && <h1 style={{color: '#ffffff'}}>Casting in progress...</h1> }
         </div>
     );
 }   

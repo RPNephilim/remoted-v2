@@ -8,6 +8,8 @@ declare global {
     interface Window {
         electronAPI?: {
             setConnectionMode: (mode: string) => Promise<any>;
+            getSources: (types: string[]) => Promise<any[]>;
+            setCastSourceId: (sourceId: string) => Promise<{success: boolean}>;
         };
     }
 }

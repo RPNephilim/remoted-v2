@@ -9,6 +9,12 @@ export const establishCastConnection = async (context: any) => {
         window.electronAPI.setConnectionMode('cast').then(() => {
             console.log('Set connection mode to cast in main process');
         });
+
+        if (connection.castModeSourceId) {
+            window.electronAPI.setCastSourceId(connection.castModeSourceId).then(() => {
+                console.log(`Set cast source ID to ${connection.castModeSourceId} in main process`);
+            });
+        }
     } else {
         console.log('Running in browser mode - Electron API not available');
     }
