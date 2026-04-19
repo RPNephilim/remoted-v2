@@ -23,8 +23,8 @@ export const establishCastConnection = async (context: any) => {
     const displayMediaOptions = {
         audio: true,
         video: {
-            width: { ideal: 1920 },
-            height: { ideal: 1080 },
+            width: { ideal: 1920, max: 1920 },
+            height: { ideal: 1080, max: 1080 },
             frameRate: { ideal: 60, max: 60 },
             latency: 0
         }
@@ -49,8 +49,23 @@ export const establishCastConnection = async (context: any) => {
     };
 
     peerConnection.onconnectionstatechange = () => {
+        console.log('Peer connection state changed:', peerConnection.connectionState);
         if (peerConnection.connectionState === 'connected') {
             console.log('Peers connected!');
+        }
+        else if (peerConnection.connectionState === 'disconnected') {
+            console.warn('Peer connection disconnected');
+            updateConnection({
+                peerId: '',
+                connectionMode: '',
+                serverConnection: null,
+                peerConnection: null,
+                localStream: null,
+                remoteStream: null,
+                dataChannel: null,
+                connectionState: '',
+                castModeSourceId: '0'
+            });
         }
     };
 

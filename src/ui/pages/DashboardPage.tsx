@@ -6,12 +6,14 @@ import SessionDeviceBar from "../components/SessionDeviceBar";
 import ConnectTab from "../components/ConnectTab";
 import { Button } from "@mui/material";
 import { ConnectionState } from "../data/ConnectionState";
+import { DashboardViewportStatus } from "../data/DashboardViewportStatus";
+import { disconnectPeer } from "../peerconnection/PeerConnectionService";
 
 
 function DashboardPage() {
-    const { getConnection } = useContext(PeerConnectionContext)!;
+    const { updateConnection, getConnection } = useContext(PeerConnectionContext)!;
     const [viewport, setViewport] = useState<string>('');
-    const [viewportStatus, setViewportStatus] = useState<string>('');
+    const [viewportStatus, setViewportStatus] = useState<string>(DashboardViewportStatus.WELCOME);
 
     const connection = getConnection();
 
@@ -26,10 +28,28 @@ function DashboardPage() {
         }
     };
 
+    const disconnect = () => {
+        disconnectPeer({ getConnection });
+        
+        updateConnection({
+            connectionMode: '',
+            serverConnection: null,
+            peerConnection: null,
+            localStream: null,
+            remoteStream: null,
+            dataChannel: null,
+            connectionState: '',
+            castModeSourceId: '0'
+        });
+        console.log("Disconnected from peer and reset connection state");
+        setViewportStatus('');
+        console.log(`viewport: ${viewport}, viewportStatus: ${viewportStatus}`);
+    };
 
     useEffect(() => {
         if (viewport === 'connect') {
             setViewportStatus('select-peer');
+            console.log("Entered connect viewport, set status to select-peer");
         }
     }, [viewport]);
 
@@ -43,7 +63,7 @@ function DashboardPage() {
                     {viewport === 'connect' && <ConnectTab viewportStatus={viewportStatus} setViewportStatus={setViewportStatus} />}
                     {viewport === 'info' && <h1>Info View</h1>}
                     {viewport === 'account' && <h1>Account View</h1>}
-                    {!viewport && connection.connectionState === 'cast-receive' && (
+                    {!viewport && connection.connectionState === ConnectionState.CAST_RECEIVE && (
                         <video
                             id="casting-video-element"
                             ref={attachVideo} // <--- React calls this as soon as the tag exists
@@ -57,6 +77,7 @@ function DashboardPage() {
                 </div>
                 {viewport === 'connect' && viewportStatus === 'peer-selected' && <Button variant="contained" onClick={() => setViewportStatus('select-mode')}>OK</Button>}
                 {viewport === 'connect' && viewportStatus === 'select-mode' && <Button variant="contained" onClick={() => setViewportStatus('select-peer')}>Back</Button>}
+                {viewport === 'connect' && viewportStatus === 'casting' && <Button variant="contained" color="error" onClick={() => disconnect()}>Disconnect</Button>}
                 <SessionDeviceBar />
             </div>
 

@@ -43,6 +43,20 @@ export const establishControlConnection = async (context: any) => {
         if (peerConnection.connectionState === 'connected') {
             console.log('Peers connected!');
         }
+        else if (peerConnection.connectionState === 'disconnected') {
+            console.warn('Peer connection disconnected');
+            updateConnection({
+                peerId: '',
+                connectionMode: '',
+                serverConnection: null,
+                peerConnection: null,
+                localStream: null,
+                remoteStream: null,
+                dataChannel: null,
+                connectionState: '',
+                castModeSourceId: '0'
+            });
+        }
     };
 
     peerConnection.ontrack = (event) => {

@@ -128,7 +128,7 @@ app.on('certificate-error', (event, webContents, url, error, certificate, callba
   const isLocal = url.includes('localhost') ||
     url.includes('127.0.0.1') ||
     url.includes('192.168.0.238') ||
-    url.includes('192.168.1.105') ||
+    url.includes('192.168.1.104') ||
     /^https?:\/\/(10\.|172\.(1[6-9]|2[0-9]|3[01])\.|192\.168\.)/.test(url);
 
   if (isLocal) {
@@ -138,3 +138,6 @@ app.on('certificate-error', (event, webContents, url, error, certificate, callba
     callback(false);
   }
 });
+
+app.commandLine.appendSwitch('max-gum-fps', '60');
+app.commandLine.appendSwitch('webrtc-max-cpu-consumption-percentage', '100');

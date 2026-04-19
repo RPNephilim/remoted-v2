@@ -9,7 +9,7 @@ declare global {
         electronAPI?: {
             setConnectionMode: (mode: string) => Promise<any>;
             getSources: (types: string[]) => Promise<any[]>;
-            setCastSourceId: (sourceId: string) => Promise<{success: boolean}>;
+            setCastSourceId: (sourceId: string) => Promise<{ success: boolean }>;
         };
     }
 }
@@ -78,6 +78,42 @@ export const establishPeerConnection = async (context: any) => {
     }
 }
 
+export const disconnectPeer = (context: any) => {
+    const { getConnection } = context;
+    const connection = getConnection();
+
+    // Close RTCPeerConnection
+    if (connection.peerConnection) {
+        connection.peerConnection.close();
+    }
+
+    // Stop all local media tracks
+    if (connection.localStream) {
+        connection.localStream.getTracks().forEach((track: { stop: () => any; }) => track.stop());
+    }
+
+    // Stop all remote media tracks
+    if (connection.remoteStream) {
+        connection.remoteStream.getTracks().forEach((track: { stop: () => any; }) => track.stop());
+    }
+
+    // Close data channel
+    if (connection.dataChannel) {
+        connection.dataChannel.close();
+    }
+
+    // Send disconnect message to signaling server (optional)
+    if (connection.serverConnection && connection.peerId) {
+        const disconnectMessage = {
+            type: 'disconnect',
+            from: connection.userId,
+            to: connection.peerId
+        };
+        connection.serverConnection.send(JSON.stringify(disconnectMessage));
+    }
+
+};
+
 const handleOffer = async (message: any, context: any) => {
     console.log('Received offer:', message.data);
 
@@ -116,6 +152,19 @@ const handleOffer = async (message: any, context: any) => {
             // setStatus('Peers connected!');
             console.log('Peers connected!');
             updateConnection({ connectionState: 'cast-receive' });
+        }
+        else if (peerConnection.connectionState === 'disconnected') {
+            console.warn('Peer connection disconnected');
+            updateConnection({
+                peerId: '',
+                connectionMode: '',
+                peerConnection: null,
+                localStream: null,
+                remoteStream: null,
+                dataChannel: null,
+                connectionState: ConnectionState.USER_CONNECTED,
+                castModeSourceId: '0'
+            });
         }
     };
 

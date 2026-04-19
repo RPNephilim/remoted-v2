@@ -20,24 +20,24 @@ export interface UserContextType {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 const UserProvider = ({ children }: { children: ReactNode }) => {
-    // const [user, setUser] = useState<UserContextType["user"] | null>(null);
-    const [user, setUser] = useState<UserContextType["user"] | null>({
-        username: 'user1',
-        email: 'user1@example.com',
-        // devices: []
-        devices: [{
-            deviceName: 'device1',
-            lastUsed: 'Current Device',
-            dateAdded: '2026-01-20',
-            active: true
-        },
-        {
-            deviceName: 'device2',
-            lastUsed: '2026-02-10',
-            dateAdded: '2026-01-25',
-            active: true
-        }]
-    });
+    const [user, setUser] = useState<UserContextType["user"] | null>(null);
+    // const [user, setUser] = useState<UserContextType["user"] | null>({
+    //     // username: 'user1',
+    //     // email: 'user1@example.com',
+    //     devices: []
+    //     devices: [{
+    //         deviceName: 'device1',
+    //         lastUsed: 'Current Device',
+    //         dateAdded: '2026-01-20',
+    //         active: true
+    //     },
+    //     {
+    //         deviceName: 'device2',
+    //         lastUsed: '2026-02-10',
+    //         dateAdded: '2026-01-25',
+    //         active: true
+    //     }]
+    // });
 
     const userRef = useRef(user);
 

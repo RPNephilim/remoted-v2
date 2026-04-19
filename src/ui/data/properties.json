@@ -1,8 +1,11 @@
 {
-    "serverBaseUrl": "http://localhost:1111/remoted/v1",
+    "serverBaseUrl": "https://192.168.1.104:8443/remoted/v1",
     "loginPath": "/login",
     "newAccountPath": "/createaccount",
-    "signalingServerUrl": "wss://192.168.1.105:8443/remoted/v1/signaling",
+    "addDevicePath": "/device",
+    "selectDevicePath": "/device/activate",
+    "deactivateDevicePath": "/device/deactivate",
+    "signalingServerUrl": "wss://192.168.1.104:8443/remoted/v1/signaling",
     "configuration": {
         "iceServers": [
             {

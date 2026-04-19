@@ -50,16 +50,21 @@ function ConnectTab(props: any) {
     }
 
     const chooseCastSource = async () => {
-        console.log("Opening cast source picker...");
-        setOpenCastSourcePicker(true);
-        props.setViewportStatus('cast-source-picker');
-        // updateConnection({ connectionMode: 'cast' });
-        // establishPeerConnection(peerConnectionContext);
+        if (window.electronAPI) {
+            console.log("Opening cast source picker...");
+            setOpenCastSourcePicker(true);
+            props.setViewportStatus('cast-source-picker');
+        } else {
+            console.warn("Electron API not available - cannot open cast source picker");
+            updateConnection({ connectionMode: 'cast' });
+            establishPeerConnection(peerConnectionContext);
+            props.setViewportStatus('casting');
+        }
     }
 
     return (
         <div className="connect-tab-div">
-            { (props.viewportStatus === 'select-peer' || props.viewportStatus === 'peer-selected') && <List sx={{ color: '#ffffff', backgroundColor: '#4d4d4d', width: '100%', overflow: 'hidden' }}>
+            {(props.viewportStatus === 'select-peer' || props.viewportStatus === 'peer-selected') && <List sx={{ color: '#ffffff', backgroundColor: '#4d4d4d', width: '100%', overflow: 'hidden' }}>
                 {devices.filter((device: any) => device.deviceName !== userId).map((device: any) => (
                     /* 1. Use ( ) instead of { } for an implicit return */
                     <ListItem key={device.deviceName} disablePadding>
@@ -78,20 +83,21 @@ function ConnectTab(props: any) {
                             }}
                             onClick={() => confirmDeviceSelection(device.deviceName)}
                         >
-                            <ListItemText primary={device.deviceName} sx={{ width:'100%', textAlign: 'center' }} />
+                            <ListItemText primary={device.deviceName} sx={{ width: '100%', textAlign: 'center' }} />
+                            <ListItemText primary={device.active ? 'Connected' : 'Available'} sx={{ width: '100%', textAlign: 'center' }} />
                         </ListItemButton>
                     </ListItem>
                 ))}
             </List>}
-            { props.viewportStatus === 'select-mode' && <div className="mode-select-div">
-                <div><FolderIcon sx={modeIconStyle} onClick={() => connectWithPeer('browse')}/> Browse</div>
-                <div><AirplayIcon sx={modeIconStyle} onClick={() => connectWithPeer('control')}/> Control</div>
-                <div><CastConnectedIcon sx={modeIconStyle} onClick={() => chooseCastSource()}/> Cast</div>
+            {props.viewportStatus === 'select-mode' && <div className="mode-select-div">
+                <div><FolderIcon sx={modeIconStyle} onClick={() => connectWithPeer('browse')} /> Browse</div>
+                <div><AirplayIcon sx={modeIconStyle} onClick={() => connectWithPeer('control')} /> Control</div>
+                <div><CastConnectedIcon sx={modeIconStyle} onClick={() => chooseCastSource()} /> Cast</div>
             </div>}
-            { props.viewportStatus === 'cast-source-picker' && <CastSourcePicker open={openCastSourcePicker} viewPortStatus={props.viewportStatus} setViewportStatus={props.setViewportStatus}  /> }
-            { props.viewportStatus === 'casting' && <h1 style={{color: '#ffffff'}}>Casting in progress...</h1> }
+            {props.viewportStatus === 'cast-source-picker' && <CastSourcePicker open={openCastSourcePicker} viewPortStatus={props.viewportStatus} setViewportStatus={props.setViewportStatus} />}
+            {props.viewportStatus === 'casting' && <h1 style={{ color: '#ffffff' }}>Casting in progress...</h1>}
         </div>
     );
-}   
+}
 
 export default ConnectTab;
