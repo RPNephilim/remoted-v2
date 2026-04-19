@@ -8,6 +8,8 @@ import { Button } from "@mui/material";
 import { ConnectionState } from "../data/ConnectionState";
 import { DashboardViewportStatus } from "../data/DashboardViewportStatus";
 import { disconnectPeer } from "../peerconnection/PeerConnectionService";
+import { deactivateDevice } from "../utils/DeviceManager";
+import { UserContext } from "../contexts/UserContext";
 
 
 function DashboardPage() {
@@ -30,10 +32,9 @@ function DashboardPage() {
 
     const disconnect = () => {
         disconnectPeer({ getConnection });
-        
+
         updateConnection({
             connectionMode: '',
-            serverConnection: null,
             peerConnection: null,
             localStream: null,
             remoteStream: null,
@@ -42,7 +43,7 @@ function DashboardPage() {
             castModeSourceId: '0'
         });
         console.log("Disconnected from peer and reset connection state");
-        setViewportStatus('');
+        setViewportStatus('select-peer');
         console.log(`viewport: ${viewport}, viewportStatus: ${viewportStatus}`);
     };
 
@@ -52,7 +53,6 @@ function DashboardPage() {
             console.log("Entered connect viewport, set status to select-peer");
         }
     }, [viewport]);
-
 
 
     return (

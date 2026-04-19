@@ -1,8 +1,11 @@
+import { use, useContext } from 'react';
 import { ConnectionState } from '../data/ConnectionState';
 import properties from '../data/properties.json';
+import { deactivateDevice } from '../utils/DeviceManager';
 import { establishBrowseConnection } from './BrowseModeUtil';
 import { establishCastConnection } from './CastModeUtil';
 import { establishControlConnection } from './ControlModeUtil';
+import { UserContext } from '../contexts/UserContext';
 
 declare global {
     interface Window {
@@ -17,10 +20,13 @@ declare global {
 
 // Establish a connection with the signaling server and register the user
 export const registerUser = (context: any) => {
-    const { getConnection, updateConnection } = context;
+    const { peerConnectionContext, userContext } = context;
+    const { getConnection, updateConnection } = peerConnectionContext;
     const connection = getConnection();
     const signalingServerUrl = properties.signalingServerUrl;
     const serverConnection = new WebSocket(signalingServerUrl);
+    const { getUser } = userContext;
+    const user = getUser();
 
     serverConnection.onopen = () => {
         console.log('Connected to signaling server');
@@ -29,7 +35,7 @@ export const registerUser = (context: any) => {
         // Send a registration message to the signaling server with the user ID
         const registrationMessage = {
             type: 'register',
-            from: connection.userId
+            from: `${connection.userId}:${user?.username}`
         };
         serverConnection.send(JSON.stringify(registrationMessage));
         console.log('Sent registration message to signaling server:', registrationMessage);
@@ -40,11 +46,11 @@ export const registerUser = (context: any) => {
         console.log('Received message from signaling server:', response);
 
         if (response.type === 'offer') {
-            await handleOffer(response, context);
+            await handleOffer(response, peerConnectionContext);
         } else if (response.type === 'answer') {
-            await handleAnswer(response, context);
+            await handleAnswer(response, peerConnectionContext);
         } else if (response.type === 'ice-candidate') {
-            await handleIceCandidate(response, context);
+            await handleIceCandidate(response, peerConnectionContext);
         } else if (response.type === 'peer-registered') {
             console.log("Successfully registered Peer!!!");
         }
@@ -52,6 +58,12 @@ export const registerUser = (context: any) => {
 
     serverConnection.onerror = (error) => {
         console.error('WebSocket error:', error);
+    };
+
+    serverConnection.onclose = async () => {
+        console.warn('WebSocket connection closed');
+        await deactivateDevice(connection.userId, connection.userId);
+        updateConnection({ ConnectionState: ''});
     };
 
 }
@@ -102,16 +114,6 @@ export const disconnectPeer = (context: any) => {
         connection.dataChannel.close();
     }
 
-    // Send disconnect message to signaling server (optional)
-    if (connection.serverConnection && connection.peerId) {
-        const disconnectMessage = {
-            type: 'disconnect',
-            from: connection.userId,
-            to: connection.peerId
-        };
-        connection.serverConnection.send(JSON.stringify(disconnectMessage));
-    }
-
 };
 
 const handleOffer = async (message: any, context: any) => {
@@ -153,8 +155,8 @@ const handleOffer = async (message: any, context: any) => {
             console.log('Peers connected!');
             updateConnection({ connectionState: 'cast-receive' });
         }
-        else if (peerConnection.connectionState === 'disconnected') {
-            console.warn('Peer connection disconnected');
+        else if (peerConnection.connectionState === 'disconnected' || peerConnection.connectionState === 'failed' || peerConnection.connectionState === 'closed') {
+            console.warn('Peer connection ended: ', peerConnection.connectionState);
             updateConnection({
                 peerId: '',
                 connectionMode: '',

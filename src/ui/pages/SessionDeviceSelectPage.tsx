@@ -14,9 +14,11 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { get } from "node:http";
+import { activateDevice } from "../utils/DeviceManager";
 
 function SessionDeviceSelectPage() {
-    const { getUser, updateUser } = useContext(UserContext)!;
+    const userContext = useContext(UserContext)!;
+    const { getUser, updateUser } = userContext;
     const peerConnectionContext = useContext(PeerConnectionContext)!;
     const { getConnection, updateConnection } = peerConnectionContext;
     const user = getUser();
@@ -37,25 +39,10 @@ function SessionDeviceSelectPage() {
             console.log("Confirmed device selection: ", selectedDevice);
 
             // update device connection in server
-            const payload = {
-                username: user?.username,
-                deviceName: selectedDevice
-            }
-            const setDeviceUrl = properties.serverBaseUrl + properties.selectDevicePath;
-            try {
-                const response = await fetch(setDeviceUrl, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(payload)
-                });
-            } catch (error) {
-                console.error("Error while activating device", error);
-            }
+            activateDevice(user?.username as string, selectedDevice);
 
             updateConnection({ userId: selectedDevice });
-            registerUser(peerConnectionContext);
+            registerUser({peerConnectionContext, userContext});
         } else {
             console.warn("No device selected!");
         }

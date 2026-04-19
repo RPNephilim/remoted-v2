@@ -53,12 +53,11 @@ export const establishCastConnection = async (context: any) => {
         if (peerConnection.connectionState === 'connected') {
             console.log('Peers connected!');
         }
-        else if (peerConnection.connectionState === 'disconnected') {
-            console.warn('Peer connection disconnected');
+        else if (peerConnection.connectionState === 'disconnected' || peerConnection.connectionState === 'failed' || peerConnection.connectionState === 'closed') {
+            console.warn('Peer connection ended: ', peerConnection.connectionState);
             updateConnection({
                 peerId: '',
                 connectionMode: '',
-                serverConnection: null,
                 peerConnection: null,
                 localStream: null,
                 remoteStream: null,

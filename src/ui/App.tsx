@@ -1,11 +1,10 @@
-import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { HashRouter, Routes, Route } from 'react-router-dom'
 import AuthenticationPage from './pages/AuthenticationPage';
 import DashboardPage from './pages/DashboardPage';
 import SessionDeviceSelectPage from './pages/SessionDeviceSelectPage';
-import { UserProvider } from './contexts/UserContext';
-import { PeerConnectionProvider } from './contexts/PeerConnectionContext';
+import {  UserProvider } from './contexts/UserContext';
+import {  PeerConnectionProvider } from './contexts/PeerConnectionContext';
 import './App.css';
 
 function App() {
